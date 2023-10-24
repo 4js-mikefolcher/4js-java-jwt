@@ -29,11 +29,12 @@ tasks.named("checkstyleJmh").configure({
     enabled = false
 })
 
+version "4.01.00"
 logger.lifecycle("Using version ${version} for ${group}.${name}")
 
 oss {
     name "java jwt"
-    repository "java-jwt"
+    repository "4js-java-jwt"
     organization "auth0"
     description "Java implementation of JSON Web Token (JWT)"
     baselineCompareVersion "4.1.0"
@@ -72,6 +73,7 @@ javadoc {
 }
 
 dependencies {
+    implementation 'com.auth0:java-jwt:4.4.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
@@ -119,6 +121,31 @@ task compileModuleInfoJava(type: JavaCompile) {
                 '--module-path', compileJava.classpath.asPath
         ]
     }
+}
+
+task getDeps(type: Copy) {
+    from configurations.runtime
+    into 'runtime/'
+}
+
+task downloadDependencies {
+  description "Pre-downloads *most* dependencies"
+  doLast {
+    configurations.getAsMap().each { name, config ->
+      println "Retrieving dependencies for $name"
+      try {
+        println config.files
+        config.files
+      } catch (e) {
+        project.logger.info e.message // some cannot be resolved, silentlyish skip them
+      }
+    }
+  }
+}
+
+task copyDependencies(type: Copy) {
+  from configurations.default
+  into 'dependencies'
 }
 
 compileTestJava {
