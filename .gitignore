@@ -97,3 +97,5 @@ gradle-app.setting
 
 # Four Js Compiled files
 *.42?
+*.pem
+test.sh
